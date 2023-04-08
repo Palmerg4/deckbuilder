@@ -4,82 +4,102 @@ pragma solidity 0.8.19;
 import {ERC1155} from "lib/openzeppelin-contracts/contracts/token/ERC1155/ERC1155.sol";
 
 contract DeckBuilder {
-    ERC1155 erc1155;
+
+    uint256 deckSize = 60;
 
     address _erc1155 = address(0x2e234DAe75C793f67A35089C9d99245E1C58470b);
 
     error InsufficientBalance();
     error ZeroAmountInArray();
+    error MsgSenderIsNotApprovedOrOwner();
+    error ArrayLengthMismatch();
+    error IncorrectDeckSize();
 
-    // Store user deck ID input
+    // Store user deck ID input - store IDS/Amounts arrays on FE - check arrays against hash via checkKeccak()
+                                                                    // when a user selects a deck to use
 
     // Retrieve stored deck IDs
 
     // 'Shuffle' the stored deck IDs and output a ZK hash
 
+    // TODO: check gas consumtion on event emitting _ids and _amounts arrays
 
+    event DeckCreated(address indexed _user, uint256[] indexed _ids, uint256[] indexed _amounts, bytes32 _hash);
 
     mapping(address => Deck[]) usersDecks;
-    mapping(address => Deck1[]) usersDeck1s;
-
-    struct Deck1{
-        bytes32 merkleRoot;
-    }
 
     struct Deck{
-        uint256[] ids;
-        uint256[] amounts;
+        bytes32 hash;
     }
 
-    function setDeckMemory(uint256[] memory _ids, uint256[] memory _amounts) public {
-        Deck memory deck1 = Deck(_ids, _amounts);
-        usersDecks[msg.sender].push(deck1);
+    function setDeckHashEvent(address _user, uint256[] calldata _ids, uint256[] calldata _amounts) public {
+        bytes32 hash = createhash(_user, _ids, _amounts);
+        _checkArrayAmounts(_ids, _amounts);
+        _setDeckhash(hash);
+        emit DeckCreated(_user, _ids, _amounts, hash);
     }
 
-    function setDeckCalldata(uint256[] calldata _ids, uint256[] calldata _amounts) public {
-        Deck memory deck2 = Deck(_ids, _amounts);
-        usersDecks[msg.sender].push(deck2);
-
+    function setDeckHash(address _user, uint256[] calldata _ids, uint256[] calldata _amounts) public {
+        bytes32 hash = createhash(_user, _ids, _amounts);
+        _checkArrayAmounts(_ids, _amounts);
+        _setDeckhash(hash);
     }
 
-    function setDeckRootCalldata(uint256[] calldata _ids, uint256[] calldata _amounts) public {
-        bytes32 root = createRoot(_ids, _amounts);
-        Deck1 memory deck1337 = Deck1(root);
-        usersDeck1s[msg.sender].push(deck1337);
+    function _checkArrayAmounts(uint256[] calldata _ids, uint256[] calldata _amounts) internal view{
+        uint256 length = _ids.length;
+        uint256 total;
+        if(length != _amounts.length) revert ArrayLengthMismatch();
+        
+        for(uint256 i=0; i < length; i++){
+            total += _amounts[i];
+        }
+        if(total != deckSize) revert IncorrectDeckSize();
+    } 
+
+    function _setDeckhash(bytes32 _hash) internal {
+        Deck memory deck1337 = Deck(_hash);
+        usersDecks[msg.sender].push(deck1337);
     }
 
-    function setDeckRoot(bytes32 _merkleRoot) public {
-        Deck1 memory deck1337 = Deck1(_merkleRoot);
-        usersDeck1s[msg.sender].push(deck1337);
-    }
-
-    function checkKeccak(uint256[] calldata _ids, uint256[] calldata _amounts, bytes32 _merkleRoot) public view returns(bool) {
-
-
-
-        /*for(uint256 i=0; i < _ids.length; ++i){
-            if(erc1155(_erc1155).balanceOf(msg.sender, _ids[i]) < _amounts[i]) revert InsufficientBalance();
-        }*/
-
-        if(keccak256(abi.encodePacked(_ids, _amounts)) != _merkleRoot) return false;
+    function checkKeccak(
+        address _user, 
+        uint256[] calldata _ids, 
+        uint256[] calldata _amounts, 
+        bytes32 _hash
+    ) public view returns(bool) {
+        checkUserBalance(_user, _ids, _amounts);
+        if(keccak256(abi.encodePacked(_ids, _amounts)) != _hash) return false;
         return true;
     }
 
-    function createRoot(uint256[] calldata _ids, uint256[] calldata _amounts) public view returns(bytes32){
+    function createhash(
+        address _user, 
+        uint256[] calldata _ids, 
+        uint256[] calldata _amounts
+    ) public view returns(bytes32){
+        checkUserBalance(_user, _ids, _amounts);
+        bytes32 hash = keccak256(abi.encodePacked(_ids, _amounts));
+        return hash;
+    }
 
+    function checkUserBalance(
+        address _user, 
+        uint256[] calldata _ids, 
+        uint256[] calldata _amounts
+    ) public view returns(bool){
         ERC1155 erc1155 = ERC1155(_erc1155);
+        if(_user != msg.sender && !erc1155.isApprovedForAll(_user, msg.sender)) revert MsgSenderIsNotApprovedOrOwner();
 
         for(uint256 i=0; i < _ids.length; i++){
-            if(erc1155.balanceOf(msg.sender, _ids[i]) < _amounts[i]) revert InsufficientBalance();
+            if(erc1155.balanceOf(_user, _ids[i]) < _amounts[i]) revert InsufficientBalance();
             if(_ids[i] == 0 || _amounts[i] == 0) revert ZeroAmountInArray();
         }
 
-        bytes32 root = keccak256(abi.encodePacked(_ids, _amounts));
-
-        return root;
+        return true;
     }
 
-    function retrieveDecks(address _user) public {
+    function retrieveDecks(address _user, uint256 _index) public view {
+
 
     }
 

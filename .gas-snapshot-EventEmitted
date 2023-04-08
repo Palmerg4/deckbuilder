@@ -1,0 +1,2 @@
+DeckBuilderTest:testEventEmittedGasConsumption() (gas: 254224)
+DeckBuilderTest:testEventNotEmittedGasConsumption() (gas: 250331)
