@@ -1,0 +1,4 @@
+PackOpenerTest:testGasInitiateAndFulfillOneCardPackOpening() (gas: 141108)
+PackOpenerTest:testGasInitiateAndFullfillTenCardPackOpening() (gas: 358826)
+PackOpenerTest:testGasInitiateOneCardPackOpening() (gas: 125567)
+PackOpenerTest:testGasInitiateTenCardPackOpening() (gas: 125523)

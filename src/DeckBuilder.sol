@@ -5,6 +5,27 @@ import {ERC1155} from "lib/openzeppelin-contracts/contracts/token/ERC1155/ERC115
 
 contract DeckBuilder {
 
+    /* Store user deck ID input - store IDS/Amounts arrays on FE - check arrays against hash via checkKeccak()
+                                                                    // when a user selects a deck to use
+
+        Retrieve stored deck IDs
+            - Using a subgraph query on FE to retreive the Ids and Amounts then check the users balance is correct to use the deck
+                - Could just have an off-chain DB storing the ids and amounts and assigning them to a users 'Deck Collection'; This would introduce a 
+                - Same checks would apply; Using checkKeccak() to verify the users deck hash and ids/amounts are correct and available 
+    
+
+            -'Shuffle' the stored deck IDs and output a hash; FE will submit this hash on-chain for provability
+
+
+            - Maybe have a 'global' deck ID, incrementing each time a user creates a deck. This will be useful for querying from the subgraph,
+                - Would need to check for exact hash already set                           as the users personal index could change due to user 
+                 (I.E same exact deck ids and amounts)                                        removing decks in future
+                  and assign the deck accordingly                                                                             
+
+
+    */
+    // TODO: check gas consumtion on event emitting _ids and _amounts arrays
+
     uint256 deckSize = 60;
 
     address _erc1155 = address(0x2e234DAe75C793f67A35089C9d99245E1C58470b);
@@ -14,15 +35,6 @@ contract DeckBuilder {
     error MsgSenderIsNotApprovedOrOwner();
     error ArrayLengthMismatch();
     error IncorrectDeckSize();
-
-    // Store user deck ID input - store IDS/Amounts arrays on FE - check arrays against hash via checkKeccak()
-                                                                    // when a user selects a deck to use
-
-    // Retrieve stored deck IDs
-
-    // 'Shuffle' the stored deck IDs and output a ZK hash
-
-    // TODO: check gas consumtion on event emitting _ids and _amounts arrays
 
     event DeckCreated(address indexed _user, uint256[] indexed _ids, uint256[] indexed _amounts, bytes32 _hash);
 
@@ -98,7 +110,9 @@ contract DeckBuilder {
         return true;
     }
 
-    function retrieveDecks(address _user, uint256 _index) public view {
+    function retrieveDeck(address _user, uint256 _index) public view {
+
+
 
 
     }

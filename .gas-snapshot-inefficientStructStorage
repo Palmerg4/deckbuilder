@@ -1,0 +1,3 @@
+DeckBuilderTest:testEventEmittedGasConsumption() (gas: 271186)
+DeckBuilderTest:testEventEmittedGasConsumptionInefficient() (gas: 2977702) -- Storing ids and amounts in a struct mapping == bad
+DeckBuilderTest:testEventNotEmittedGasConsumption() (gas: 267248)

@@ -248,6 +248,7 @@ contract DeckBuilderTest is Test{
 
 
     }
+
     function testEventNotEmittedGasConsumption() public {
         vm.startPrank(alice);
 
