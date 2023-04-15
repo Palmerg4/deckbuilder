@@ -6,7 +6,7 @@ import {ERC1155} from "lib/openzeppelin-contracts/contracts/token/ERC1155/ERC115
 contract DeckBuilder {
 
     /* Store user deck ID input - store IDS/Amounts arrays on FE - check arrays against hash via checkKeccak()
-                                                                    // when a user selects a deck to use
+                                                                     when a user selects a deck to use
 
         Retrieve stored deck IDs
             - Using a subgraph query on FE to retreive the Ids and Amounts then check the users balance is correct to use the deck

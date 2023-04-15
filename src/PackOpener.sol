@@ -51,6 +51,9 @@ contract PackOpener is ERC1155{
             - Minimum pack size is 12(?) taking 12 blocks to unlock 
 
     */
+    function userLocked(address _user) public view returns (bool){
+        return quedByUser[_user].locked;
+    }
 
     function initiatePackOpen(
         address _user,

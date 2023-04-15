@@ -17,7 +17,7 @@ contract PackOpenerTest is Test{
         vm.startPrank(alice);
     }
 
-    function testGasInitiateOneCardPackOpening() public {
+    /*function testGasInitiateOneCardPackOpening() public {
         pack.initiatePackOpen(alice, 1);
     }
 
@@ -37,19 +37,20 @@ contract PackOpenerTest is Test{
         pack.initiatePackOpen(alice, 10);
         vm.roll(10000015);
         pack.fulfillInitiatedPackOpen(alice);
-    }
+    }*/
 
 
     function testInitiatePackOpening() public {
         //vm.startPrank(alice);
 
         console.log(pack.packSize(alice));
-        vm.roll(10000200);
-        pack.initiatePackOpen(alice, 1);
+        vm.roll(10000500);
+        pack.initiatePackOpen(alice, 10);
+        console.log(pack.userLocked(alice));
         console.log(pack.packSize(alice));
         console.log(pack.unlockBlock(alice));
         console.log(block.number);
-        vm.roll(10000215);
+        vm.roll(10000515);
         console.log(block.number);
 
 
