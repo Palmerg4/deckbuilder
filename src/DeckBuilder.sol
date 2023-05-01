@@ -24,7 +24,6 @@ contract DeckBuilder {
 
 
     */
-    // TODO: check gas consumtion on event emitting _ids and _amounts arrays
 
     uint256 deckSize = 60;
 
@@ -41,14 +40,14 @@ contract DeckBuilder {
     mapping(address => Deck[]) usersDecks;
 
     struct Deck{
-        bytes32 hash;
+        bytes32 _hash;
     }
 
     function setDeckHashEvent(address _user, uint256[] calldata _ids, uint256[] calldata _amounts) public {
-        bytes32 hash = createhash(_user, _ids, _amounts);
+        bytes32 _hash = createhash(_user, _ids, _amounts);
         _checkArrayAmounts(_ids, _amounts);
-        _setDeckhash(hash);
-        emit DeckCreated(_user, _ids, _amounts, hash);
+        _setDeckhash(_hash);
+        emit DeckCreated(_user, _ids, _amounts, _hash);
     }
 
     function setDeckHash(address _user, uint256[] calldata _ids, uint256[] calldata _amounts) public {
@@ -100,7 +99,6 @@ contract DeckBuilder {
         uint256[] calldata _amounts
     ) public view returns(bool){
         ERC1155 erc1155 = ERC1155(_erc1155);
-        if(_user != msg.sender && !erc1155.isApprovedForAll(_user, msg.sender)) revert MsgSenderIsNotApprovedOrOwner();
 
         for(uint256 i=0; i < _ids.length; i++){
             if(erc1155.balanceOf(_user, _ids[i]) < _amounts[i]) revert InsufficientBalance();
