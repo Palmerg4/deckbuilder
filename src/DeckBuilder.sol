@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+/// SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
 import {ERC1155} from "lib/openzeppelin-contracts/contracts/token/ERC1155/ERC1155.sol";
@@ -39,6 +39,7 @@ contract DeckBuilder {
 
     mapping(address => Deck[]) usersDecks;
 
+// TODO: add more elements to the Deck struct. i.e wins/losses/price(?)
     struct Deck{
         bytes32 _hash;
     }
@@ -51,9 +52,9 @@ contract DeckBuilder {
     }
 
     function setDeckHash(address _user, uint256[] calldata _ids, uint256[] calldata _amounts) public {
-        bytes32 hash = createhash(_user, _ids, _amounts);
+        bytes32 _hash = createhash(_user, _ids, _amounts);
         _checkArrayAmounts(_ids, _amounts);
-        _setDeckhash(hash);
+        _setDeckhash(_hash);
     }
 
     function _checkArrayAmounts(uint256[] calldata _ids, uint256[] calldata _amounts) internal view{
@@ -89,8 +90,8 @@ contract DeckBuilder {
         uint256[] calldata _amounts
     ) public view returns(bytes32){
         checkUserBalance(_user, _ids, _amounts);
-        bytes32 hash = keccak256(abi.encodePacked(_ids, _amounts));
-        return hash;
+        bytes32 _hash = keccak256(abi.encodePacked(_ids, _amounts));
+        return _hash;
     }
 
     function checkUserBalance(
@@ -108,14 +109,7 @@ contract DeckBuilder {
         return true;
     }
 
-    function retrieveDeck(address _user, uint256 _index) public view {
-
-
-
-
+    function retrieveDeck(address _user, uint256 _index) public view returns(Deck memory){
+        return usersDecks[_user][_index];
     }
-
-
-
-
 }
